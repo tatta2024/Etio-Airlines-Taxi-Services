@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethiopian Ride Fare Estimator</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #006666, #004d4d); /* Gradient background */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        /* Main container */
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ffdd57; /* Highlighted color for titles */
+            margin-bottom: 20px;
+        }
+        label, button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        /* Styled button */
+        button {
+            background-color: #ffdd57;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ffaa00;
+        }
+        /* Input styling */
+        input {
+            padding: 8px;
+            width: calc(50% - 20px);
+            margin: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #004d4d;
+            color: #ffdd57;
+        }
+        td {
+            background-color: #006666;
+            color: #ffffff;
+        }
+        /* Search result */
+        #searchResult {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffdd57;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ethiopian Airlines Taxi Service</h1>
+
+        <!-- Search Fare Section at the Top -->
+        <h2>Check the Fare for Your Route</h2>
+        <label for="from">From:</label>
+        <input type="text" id="from" placeholder="Enter starting point">
+        <label for="to">To:</label>
+        <input type="text" id="to" placeholder="Enter destination">
+        <button onclick="checkRouteCost()">Check Cost</button>
+
+        <p id="searchResult"></p>
+
+        <!-- Route Cost Table -->
+        <h2>Available Routes and Costs</h2>
+        <table id="routeTable">
+            <tr>
+                <th>Route</th>
+                <th>Cost (Birr)</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const routes = [
+            { from: "A", to: "B", cost: 300 },
+            { from: "B", to: "C", cost: 250 },
+            { from: "C", to: "D", cost: 200 },
+            { from: "D", to: "E", cost: 150 },
+        ];
+
+        const ratePerKilometer = 100;
+
+        function displayRoutes() {
+            const table = document.getElementById("routeTable");
+            routes.forEach(route => {
+                const row = document.createElement("tr");
+                const routeCell = document.createElement("td");
+                routeCell.textContent = `${route.from} to ${route.to}`;
+                const costCell = document.createElement("td");
+                costCell.textContent = `${route.cost} birr`;
+                row.appendChild(routeCell);
+                row.appendChild(costCell);
+                table.appendChild(row);
+            });
+        }
+
+        function estimateRouteCost(from, to) {
+            const routeIndexFrom = routes.findIndex(route => route.from.toLowerCase() === from.toLowerCase());
+            const routeIndexTo = routes.findIndex(route => route.to.toLowerCase() === to.toLowerCase());
+            const estimatedDistance = Math.abs(routeIndexFrom - routeIndexTo);
+
+            return estimatedDistance * ratePerKilometer;
+        }
+
+        function checkRouteCost() {
+            const from = document.getElementById("from").value.trim().toLowerCase();
+            const to = document.getElementById("to").value.trim().toLowerCase();
+            const resultElement = document.getElementById("searchResult");
+
+            const directRoute = routes.find(route => 
+                route.from.toLowerCase() === from && route.to.toLowerCase() === to
+            );
+            
+            if (directRoute) {
+                resultElement.textContent = `The cost from ${directRoute.from} to ${directRoute.to} is ${directRoute.cost} birr.`;
+            } else {
+                const estimatedCost = estimateRouteCost(from, to);
+                if (estimatedCost > 0) {
+                    resultElement.textContent = `There is no direct route from ${from.toUpperCase()} to ${to.toUpperCase()}. The estimated cost is ${estimatedCost} birr.`;
+                } else {
+                    resultElement.textContent = `Sorry, no route found from ${from.toUpperCase()} to ${to.toUpperCase()}.`;
+                }
+            }
+        }
+
+        window.onload = displayRoutes;
+    </script>
+
+</body>
+</html>
